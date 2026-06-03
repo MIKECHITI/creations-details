@@ -12,8 +12,9 @@
     field.parentElement.appendChild(error);
   };
 
+  const formspreeEndpoint = 'https://formspree.io/f/xaqzyype';
+
   form.addEventListener('submit', (event) => {
-    event.preventDefault();
     let valid = true;
 
     form.querySelectorAll('[required]').forEach((field) => {
@@ -34,10 +35,30 @@
 
     if (!valid) return;
 
-    const values = Object.fromEntries(new FormData(form).entries());
-    console.log('Enquiry submission:', values);
-    const name = values.firstName || 'there';
-    form.outerHTML = `<div class="success-card"><h3>Thank you, ${name}!</h3><p>We've received your enquiry and will be in touch within 24 hours.</p></div>`;
+    event.preventDefault();
+    const formData = new FormData(form);
+
+    fetch(formspreeEndpoint, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        Accept: 'application/json'
+      }
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.ok === false || data.errors) {
+          const errorMessage = data.errors ? data.errors.map((error) => error.message).join(' ') : 'Submission failed. Please try again.';
+          alert(errorMessage);
+          return;
+        }
+
+        const name = form.querySelector('input[name="firstName"]').value.trim() || 'there';
+        form.outerHTML = `<div class="success-card"><h3>Thank you, ${name}!</h3><p>Your enquiry has been sent successfully. We'll respond within 24 hours.</p></div>`;
+      })
+      .catch(() => {
+        alert('Sorry, there was a problem sending your enquiry. Please try again later.');
+      });
   });
 
   document.querySelectorAll('.faq-item').forEach((item) => {
