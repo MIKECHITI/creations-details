@@ -17,10 +17,7 @@ No build step is required.
 1. Open `index.html` directly in a browser.
 2. Navigate through the pages using the top menu.
 
-## Deploy to Vercel
-
-- Drag and drop the repository directory in the Vercel dashboard, **or**
-- Run `vercel --prod` from this repository root.
+## Deploy to Netlify
 
 ## Placeholder Replacement Checklist
 
